@@ -3,6 +3,8 @@
 #[global_allocator]
 static ALLOC: rpmalloc::RpMalloc = rpmalloc::RpMalloc;
 
+use std::time::Instant;
+
 use maligog::vk;
 use tracing::Level;
 use winit::event_loop::ControlFlow;
@@ -14,12 +16,18 @@ fn main() {
         .with_max_level(Level::DEBUG)
         .init();
     tracing::debug!("fuck");
+    dotenv::dotenv().ok();
+    puffin::set_scopes_on(true);
+
     let event_loop = winit::event_loop::EventLoop::new();
     let window = winit::window::WindowBuilder::new()
         .with_inner_size(winit::dpi::PhysicalSize::new(800, 600))
         .build(&event_loop)
         .unwrap();
+    let start = Instant::now();
+
     let engine = engine::Engine::new();
+    let delta = start.elapsed();
     event_loop.run(|event, _, control_flow| {
         *control_flow = ControlFlow::Poll;
         match event {
